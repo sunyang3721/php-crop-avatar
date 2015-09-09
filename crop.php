@@ -3,19 +3,20 @@
     private $src;
     private $data;
     private $file;
+    private $file_name;
     private $dst;
     private $type;
     private $extension;
     private $msg;
 
-    function __construct($src, $data, $file) {
-      $this -> setSrc($src);
+    function __construct($src, $data, $file,$file_name) {
+      $this -> setSrc($src,$file_name);
       $this -> setData($data);
-      $this -> setFile($file);
+      $this -> setFile($file,$file_name);
       $this -> crop($this -> src, $this -> dst, $this -> data);
     }
 
-    private function setSrc($src) {
+    private function setSrc($src,$file_name) {
       if (!empty($src)) {
         $type = exif_imagetype($src);
 
@@ -34,7 +35,7 @@
       }
     }
 
-    private function setFile($file) {
+    private function setFile($file,$file_name) {
       $errorCode = $file['error'];
 
       if ($errorCode === UPLOAD_ERR_OK) {
@@ -42,7 +43,7 @@
 
         if ($type) {
           $extension = image_type_to_extension($type);
-          $src = 'img/' . date('YmdHis') . '.original' . $extension; //上传原图
+          $src = 'img/' . $file_name . '.original' . $extension; //上传原图
 
           if ($type == IMAGETYPE_GIF || $type == IMAGETYPE_JPEG || $type == IMAGETYPE_PNG) {
 
@@ -56,7 +57,7 @@
               $this -> src = $src;
               $this -> type = $type;
               $this -> extension = $extension;
-              $this -> setDst();
+              $this -> setDst($file_name);
             } else {
                $this -> msg = '上传图片失败';
             }
@@ -71,8 +72,8 @@
       }
     }
 
-    private function setDst() {
-      $this -> dst = 'img/' . date('YmdHis') . '.png';
+    private function setDst($file_name) {
+      $this -> dst = 'img/' . $file_name . '.png';
     }
 
     private function crop($src, $dst, $data) {
@@ -228,7 +229,8 @@
     }
   }
 
-  $crop = new CropAvatar($_POST['avatar_src'], $_POST['avatar_data'], $_FILES['avatar_file']);
+  $file_name = date('YmdHis');
+  $crop = new CropAvatar($_POST['avatar_src'], $_POST['avatar_data'], $_FILES['avatar_file'],$file_name);
 
   $response = array(
     'state'  => 200,
