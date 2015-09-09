@@ -233,7 +233,8 @@
   $response = array(
     'state'  => 200,
     'message' => $crop -> getMsg(),
-    'result' => $crop -> getResult()
+    'result' => $crop -> getResult(),
+    'img_name' =>  date('YmdHis').'.png'  //新图片名称
   );
 
   echo json_encode($response);
